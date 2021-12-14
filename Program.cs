@@ -15,7 +15,12 @@ namespace LexiconHangman
 
     public class Hangman 
     {
-
+        private char[] secretWord;
+        public char[] SecretWord
+        {
+            get { return secretWord; }
+            set { secretWord = value; }
+        }
         public void RunGame() 
         {
             Console.WriteLine("Lexicon Hangman");
@@ -24,6 +29,7 @@ namespace LexiconHangman
             GetUserInput();
         }
     
+
         public void GetUserInput()
         {
             StringBuilder sb = new StringBuilder();
@@ -32,7 +38,24 @@ namespace LexiconHangman
             string input = Console.ReadLine();
             char inputToCheck = char.Parse(input);
             bool compare = CompareInputLetters(inputToCheck);
-
+            SecretWord = GetRandomWord();
+            int guesses = SecretWord.Length;
+            while (compare)
+            {
+                if (compare)
+                {
+                    Console.WriteLine("Great, you guessed correct! enter next letter...");
+                    input = Console.ReadLine();
+                    inputToCheck = char.Parse(input);
+                    compare = CompareInputLetters(inputToCheck);
+                }
+                else
+                {
+                    guesses--;
+                    Console.WriteLine($"Guess again! You have {guesses} left");
+                    compare = false;
+                }
+            }
 
         }
         
@@ -49,11 +72,13 @@ namespace LexiconHangman
                 {
                     Console.WriteLine(character);
                     returnValue = true;
+                    break;
                 }
                 else
                 {
                     Console.WriteLine("Wrong guess! try again...");
-                    returnValue = false;                   
+                    returnValue = false;
+                    break;
                 }
             }
             return returnValue;

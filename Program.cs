@@ -15,16 +15,49 @@ namespace LexiconHangman
 
     public class Hangman 
     {
+
+        //Set up collections 
         private char[] secretWord;
         public char[] SecretWord
         {
             get { return secretWord; }
             set { secretWord = value; }
         }
+
+        //Storing correct guessed characters in a list
+        private readonly List<char> guessedLetters = new List<char>();
+        public void SetGuessedLetters(char ltr)
+        {
+           guessedLetters.Add(ltr);
+            Console.WriteLine(ltr + "test");
+        }
+
+        public List<char> GetGuessedLetters()
+        {
+            return guessedLetters;
+        }
+
+        //List for the char left to guess
+        private readonly List<char> leftToGuess = new List<char>();
+        public void SetLeftToGuess(char ltr)
+        {
+            leftToGuess.Add(ltr);
+        }
+
+        public List<char> GetLeftToGuess()
+        {
+            return leftToGuess;
+        }
+
+
+
+        //private readonly List<char> correctGuesses = new List<char>();
         public void RunGame() 
         {
             Console.WriteLine("Lexicon Hangman");
             Console.WriteLine("Press enter to start game...");
+            SecretWord = GetRandomWord();
+            Console.WriteLine("The word is " + SecretWord[0] + SecretWord[1]);
             Console.ReadLine();
             GetUserInput();
         }
@@ -34,51 +67,55 @@ namespace LexiconHangman
         {
             StringBuilder sb = new StringBuilder();
             List<char> inputList = new List<char>();
-            Console.WriteLine("Enter the first letter:");
-            string input = Console.ReadLine();
-            char inputToCheck = char.Parse(input);
-            bool compare = CompareInputLetters(inputToCheck);
-            SecretWord = GetRandomWord();
-            int guesses = SecretWord.Length;
-            while (compare)
+            string input;
+            char inputToCheck;
+            //bool compare;
+            int guesses;
+            guesses = SecretWord.Length;
+            //Console.WriteLine(guesses);
+            for (int i=0; i < guesses; i++ )
             {
+                Console.WriteLine("Guess a letter...");
+                input = Console.ReadLine();
+                inputToCheck = char.Parse(input);
+                var compare = CompareInputLetters(inputToCheck);
                 if (compare)
                 {
                     Console.WriteLine("Great, you guessed correct! enter next letter...");
-                    input = Console.ReadLine();
-                    inputToCheck = char.Parse(input);
-                    compare = CompareInputLetters(inputToCheck);
+                    guesses++;
+
                 }
                 else
                 {
                     guesses--;
                     Console.WriteLine($"Guess again! You have {guesses} left");
-                    compare = false;
+                    //compare = false;
                 }
+                
             }
+            Console.WriteLine("Game over...");
 
         }
         
-        public bool CompareInputLetters(char guess)
+        public bool CompareInputLetters(char guess)//TODO fix order
         {
             char letterToCheck = guess;
-            List<char> guessedLetters = new List<char>();
-            List<char> correctGuesses = new List<char>();
-            char[] wordToGuess = GetRandomWord();
+            
+            char[] wordToGuess = SecretWord;
             bool returnValue = false;
             foreach(var character in wordToGuess)
             {
                 if(letterToCheck == character)
                 {
-                    Console.WriteLine(character);
+                    SetGuessedLetters(letterToCheck);
+
                     returnValue = true;
-                    break;
+                    
                 }
                 else
                 {
-                    Console.WriteLine("Wrong guess! try again...");
                     returnValue = false;
-                    break;
+                    
                 }
             }
             return returnValue;
@@ -91,8 +128,7 @@ namespace LexiconHangman
             int index = random.Next(wordList.Count);
             string randomWord = wordList[index];
             char[] letterByLetter = new char[randomWord.Length];
-            //test 
-            Console.WriteLine($" Word of the day is: {randomWord}");
+            
             // Copy character by character into array 
             for (int i = 0; i < randomWord.Length; i++)
             {

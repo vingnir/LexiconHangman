@@ -1,28 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
+using System.Text;
+using System.IO;
 
 namespace LexiconHangman
 {
-    class Program
+    internal class Program
     {
-        static void Main()
+        private static void Main()
         {
             Hangman player = new Hangman();
             player.RunGame();
         }
     }
 
-    public class Hangman 
+    public class Hangman
     {
         private StringBuilder secretWord = new StringBuilder();
         public StringBuilder SecretWord
         {
-            get { return secretWord; }
-            private set { secretWord = value; }
+            get => secretWord;
+            private set => secretWord = value;
         }
-        public void RunGame() 
+        public void RunGame()
         {
             Console.WriteLine("Lexicon Hangman");
             Console.WriteLine("Press enter to start game...");
@@ -31,9 +32,9 @@ namespace LexiconHangman
             Console.WriteLine("The word is " + SecretWord[0] + SecretWord[1]);
             HandleUserInput();
         }
-    
+
         public void PlayAgain()
-        {        
+        {
             Console.WriteLine("Play Again? y/n ");
             Console.WriteLine("Press enter to exit...");
             string usrInput = Console.ReadLine();
@@ -47,104 +48,97 @@ namespace LexiconHangman
             }
         }
 
-       
+
         public void HandleUserInput()
-        {   
+        {
             string input;
-            char inputToCheck;
-            bool compare;
+            //char inputToCheck = '\0'; // sets char to Unicode Null character
+            //bool compare;
             int guesses = 10;
             bool? validatedInput;
-            string usrReply;
+            //string usrReply;
+            //string correctWord = secretWord.ToString();
 
-            for (int i=0; i < 10; i++ )
+            for (int i = 0; i < 10; i++)
             {
                 guesses--;
                 Console.WriteLine("Guess a letter...");
                 input = Console.ReadLine()?.ToLower();
-                validatedInput = ValidateInput(input);
+                char parsedInput = char.Parse(input);
+                
 
-                if(validatedInput == null)
+                switch (validatedInput)
                 {
-                    Console.WriteLine("Great, you won the game and rescued the hangman!");
-                    PlayAgain();
-                    break;
-                }
-                if(validatedInput == true)
-                {
-                    inputToCheck = char.Parse(input);
-                    compare = CompareInputLetters(inputToCheck);
-                    usrReply = compare ? "Correct guess" : "Incorrect";
-                }
-                else
-                {
-                    usrReply = "You need to provide exactly one character, for example 'a' or 'b' or guess the correct word  ";
-                }
-                Console.WriteLine($"{usrReply}, you have {guesses} guesses left");
+                    case false:
+                        Console.WriteLine($"You have already guessed { input }");
+                        i--;
+                        break;
+                    case true:
+                        Console.WriteLine($"Correct!");
+                        break;
+                    default:
+                        Console.WriteLine($"Incorrect!");
+                        break;
+                }              
             }
-            Console.WriteLine("Game over...");
+            Console.WriteLine("\nGame over...");
             PlayAgain();
         }
 
-        public bool? ValidateInput(string input)
+       
+        public bool CompareInputLetters(char guess)
         {
-            string correctWord = secretWord.ToString();
+            char guess;
+            guess = char.Parse(str);
             bool? returnValue;
 
-            if (input == correctWord)
-            {                
-                returnValue = null;
-            }
-            else if (input.Length > 1 || input.Length == 0)
-            {         
+            if (guessedLetters.Contains(guess))
+            {
                 returnValue = false;
+            }
+            else if (remainingLetters.Contains(guess))
+            {
+                SetGuessedLetters(guess);
+                RemoveRemainingLetters(guess);
+                returnValue = true;
             }
             else
             {
-                returnValue = true;
+                returnValue = null;
             }
-
-            return returnValue;
-        }
-
-        public bool CompareInputLetters(char guess)
-        {                    
-            bool returnValue;
-            
-                if(remainingLetters.Contains(guess))
-                {
-                    SetGuessedLetters(guess);
-                    RemoveRemainingLetters(guess);
-                    returnValue = true; 
-                }
-                else
-                {
-                    SetGuessedLetters(guess);
-                    returnValue = false;                 
-                }
            
             return returnValue;
         }
-       
 
-            public StringBuilder GetRandomWord()//TODO read from file
-        {          
+        public StringBuilder GetRandomWord()
+        {
             Random random = new Random();
-            List<string> wordList = new List<string> { "cat", "dog", "mouse", "wolf", "giraffe" };
+            List<string> wordList = new List<string>();
+            string currentPath = Environment.CurrentDirectory;
+            string filePath = Path.Combine(currentPath, "wordList.txt"); // current path =  LexiconHangman\bin\Debug\netcoreapp3.1\wordlist.txt
+            using (var reader = new StreamReader(filePath))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {                                 
+                    wordList = line.Split(',').ToList();                  
+                }
+            }
+            
             int index = random.Next(wordList.Count);
             StringBuilder randomWord = new StringBuilder(wordList[index]);
-            
+
             return randomWord;
         }
-       
-        //Storing correct guessed characters in a list
-        private readonly StringBuilder guessedLetters = new StringBuilder();
+
+        //Storing correct guessed characters in a stringbuilder object
+        private readonly List<char> guessedLetters = new List<char>();
         private void SetGuessedLetters(char ltr)
         {
             guessedLetters.Append(ltr);
         }
         // TODO delete 
-        public StringBuilder GetGuessedLetters()
+        public List<char> GetGuessedLetters()
         {
             return guessedLetters;
         }
@@ -153,21 +147,23 @@ namespace LexiconHangman
         private readonly List<char> remainingLetters = new List<char>();
         public void RemoveRemainingLetters(char ltr)
         {
-            
-            remainingLetters.Remove(ltr);
+            for (int i = 0; i < remainingLetters.Count; i++)
+            {
+                remainingLetters.Remove(ltr);
+            }
         }
 
         private void SetRemainingLetters()
         {
-           // Adds all char of secretWord to 
+            // Adds all char of secretWord to remainingLetters
             for (int i = 0; i < secretWord.Length; i++)
             {
                 // get char at position i
-               char ltr = secretWord[i];
-               remainingLetters.Add(ltr);
+                char ltr = secretWord[i];
+                remainingLetters.Add(ltr);
             }
 
-                
+
         }
     }
 }

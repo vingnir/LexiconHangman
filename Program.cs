@@ -40,7 +40,6 @@ namespace LexiconHangman
             Console.WriteLine(menuText);
             Console.WriteLine("Press enter to start game...");
             Console.ReadKey();
-            SecretWord = GetRandomWord();           
             HandleUserInput();
         }
 
@@ -67,20 +66,18 @@ namespace LexiconHangman
             int guesses = 10;
             int ltrsRevealed = 0;
             bool winnner = false;
-
+            
+            //setup the secret word 
+            SecretWord = GetRandomWord();
             StringBuilder incorrectLetters = new StringBuilder(guesses);
             char[] correctLetters = new char[SecretWord.Length];
 
-
-            for (int i = 0; i < SecretWord.Length; i++)
-            {
-                correctLetters[i] = '_';
-                Console.Write(correctLetters[i]);
-            }
+            // Initialize correctLetters with underscore char '_'
+            SetCorrectLtrs();
 
             while (!winnner && guesses > 0)
             {
-                Console.WriteLine("\nGuess a letter...");              
+                Console.WriteLine("\nGuess a letter...");
                 usrInput = GetInput();
                 guess = usrInput[0];
                 if (correctLetters.Contains(guess) && usrInput != SecretWord)
@@ -127,8 +124,10 @@ namespace LexiconHangman
                 {
                     Console.Write(ltr);
                 }
+
                 // Prints the hanging man to the screen
-                Console.WriteLine("\n" + HangHimHigh(guesses));
+                Console.WriteLine("\n" + GetHangningMan(guesses));
+
             }// While ends 
 
             // If winnner is true game is won
@@ -142,19 +141,29 @@ namespace LexiconHangman
                     correctLetters[i] = SecretWord[i];
                     Console.Write(correctLetters[i]);
                 }
-                Console.WriteLine("\n Awesome! You won the game...");               
+                Console.WriteLine("\n Awesome! You won the game...");
             }
             else
             {
                 Console.WriteLine($"\nBummer, You lost the game...The word was {SecretWord}");
-
             }
             Console.WriteLine("\n Press enter to continue...");
             Console.ReadKey();
             PlayAgain();
-        }// HandleUserInputs() end
 
-        // Get the input from user and check if empty
+
+            // Initialize array with underscore char '_'
+            void SetCorrectLtrs()
+            {
+                for (int i = 0; i < SecretWord.Length; i++)
+                {
+                    correctLetters[i] = '_';
+                    Console.Write(correctLetters[i]);
+                }
+            }
+        }// HandleUserInputs method end
+
+        // Method to get the input from user and check if empty
         private static string GetInput()
         {
             string Result;
@@ -174,7 +183,7 @@ namespace LexiconHangman
         {
             Random random = new Random();
             List<string> wordList = new List<string>();
-            string currentPath = Environment.CurrentDirectory;
+            string currentPath = AppDomain.CurrentDomain.BaseDirectory;
             string filePath = Path.Combine(currentPath, "wordList.txt"); // current path =  LexiconHangman\bin\Debug\netcoreapp3.1\
             using (StreamReader reader = new StreamReader(filePath))
             {
@@ -189,10 +198,11 @@ namespace LexiconHangman
 
             return randomWord;
         }
+
         // Array of 10 hanged man strings,  starts backwards to match number of guesses 
-        static string HangHimHigh(int x)
+        private static string GetHangningMan(int guessNum)
         {
-            string[] hangingMan = {  @"
+            string[] hangingMan = { @"
   +---+
   |   |
   O   |
@@ -206,35 +216,35 @@ namespace LexiconHangman
  /|\  |
  /    |
       |
-=========",@"
+=========", @"
   +---+
   |   |
   O   |
  /|\  |
       |
       |
-=========",@"
+=========", @"
   +---+
   |   |
   O   |
  /|   |
       |
       |
-=========",@"
+=========", @"
   +---+
   |   |
   O   |
   |   |
       |
       |
-=========",@"
+=========", @"
   +---+
   |   |
   O   |
       |
       |
       |
-=========",@"
+=========", @"
   +---+
   |   |
       |
@@ -258,8 +268,8 @@ namespace LexiconHangman
 
       
       
-=========" };
-            return hangingMan[x];
+=========", "" };
+            return hangingMan[guessNum];
         }
 
     }// Class end

@@ -109,7 +109,7 @@ namespace LexiconHangman
                     Console.WriteLine("\nCorrect");
                 }
                 else
-                {   // Add the incorrect guesses to stringbuilder Obj incorrectLetters and inform user 
+                {   // Add the incorrect guesses to stringbuilder Obj incorrectLetters and informs user 
                     incorrectLetters.Append(guess);
                     Console.WriteLine($"Sorry, the secret word doesn't contain {guess}, try again...");
                     guesses--;
@@ -119,7 +119,7 @@ namespace LexiconHangman
                 // Inform user of the previous guessed letters
                 Console.WriteLine("\nIncorrect guesses: " + incorrectLetters.ToString());
 
-                // Write the correct guesses to the screen, the rest is hidden by underscore: '_'
+                // Writes the correct guesses to the screen, the rest is hidden by underscore: '_'
                 foreach (char ltr in correctLetters)
                 {
                     Console.Write(ltr);
@@ -130,7 +130,7 @@ namespace LexiconHangman
 
             }// While ends 
 
-            // If winnner is true game is won
+            // If winnner is true the game is won
             if (winnner)
             {
                 Console.WriteLine($"\nAnd the correct word was ");
@@ -152,7 +152,7 @@ namespace LexiconHangman
             PlayAgain();
 
 
-            // Initialize array with underscore char '_'
+            // Local method to initialize array with underscore char '_'
             void SetCorrectLtrs()
             {
                 for (int i = 0; i < SecretWord.Length; i++)

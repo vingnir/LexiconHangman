@@ -40,6 +40,7 @@ namespace LexiconHangman
             Console.WriteLine(menuText);
             Console.WriteLine("Press enter to start game...");
             Console.ReadKey();
+            AddToWordList("lexicon"); // Create some testwords for wordList.txt TODO delete
             HandleUserInput();
         }
 
@@ -270,6 +271,21 @@ namespace LexiconHangman
       
 =========", "" };
             return hangingMan[guessNum];
+        }
+
+        // Method to add new words to wordList if not exist
+        public static void AddToWordList(string words)
+        {
+            words += ",cat,dog,mouse,wolf,giraffe,wessel,elephant,bird";
+            string txtToSave = words; //string currentPath = AppDomain.CurrentDomain.BaseDirectory;
+            string docPath = AppDomain.CurrentDomain.BaseDirectory;
+            string combinedPath = Path.Combine(docPath, "wordList.txt");
+            using (StreamWriter outputFile = new StreamWriter(combinedPath, true))
+            {
+                outputFile.WriteLine(txtToSave);
+            }
+           // Console.WriteLine("Sparat!");
+            
         }
 
     }// Class end

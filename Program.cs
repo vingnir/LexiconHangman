@@ -80,10 +80,9 @@ namespace LexiconHangman
 
             while (!winnner && guesses > 0)
             {
-                Console.WriteLine("\nGuess a letter...");
-                usrInput = Console.ReadLine()?.ToLower();
+                Console.WriteLine("\nGuess a letter...");              
+                usrInput = GetInput();
                 guess = usrInput[0];
-
                 if (correctLetters.Contains(guess) && usrInput != SecretWord)
                 {
                     Console.WriteLine($"{guess} is already an accepted answer! Guess again..., you have {guesses} guesses left");
@@ -155,13 +154,28 @@ namespace LexiconHangman
             PlayAgain();
         }// HandleUserInputs() end
 
+        // Get the input from user and check if empty
+        private static string GetInput()
+        {
+            string Result;
+            do
+            {
+                Result = Console.ReadLine().ToLower();
+                if (string.IsNullOrEmpty(Result))
+                {
+                    Console.WriteLine("Empty input, please try again");
+                }
+            } while (string.IsNullOrEmpty(Result));
+            return Result;
+        }
+
         // Gets random word from a textfile and remove ',' then returns string
         public string GetRandomWord()
         {
             Random random = new Random();
             List<string> wordList = new List<string>();
             string currentPath = Environment.CurrentDirectory;
-            string filePath = Path.Combine(currentPath, @"..\..\..\wordList.txt"); // current path =  LexiconHangman\bin\Debug\netcoreapp3.1\ .. up 3 levels to main, remove if file not found: ..\..\..\wordList.txt
+            string filePath = Path.Combine(currentPath, "wordList.txt"); // current path =  LexiconHangman\bin\Debug\netcoreapp3.1\
             using (StreamReader reader = new StreamReader(filePath))
             {
                 string line;

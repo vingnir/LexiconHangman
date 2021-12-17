@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq;
 using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace LexiconHangman
 {
-    class Program
+    internal class Program
     {
-        static void Main()
+        private static void Main()
         {
             Hangman player = new Hangman();
             player.RunGame();
@@ -24,21 +24,28 @@ namespace LexiconHangman
             private set => secretWord = value;
         }
 
-       
+
 
         public void RunGame()
         {
-            Console.WriteLine("Lexicon Hangman");
+            string menuText = @"
+            
+                     __             _                    __ __                                 
+                    / /  ___ __ __ (_)____ ___   ___    / // /___ _ ___  ___ _ __ _  ___ _ ___ 
+                   / /__/ -_)\ \ // // __// _ \ / _ \  / _  // _ `// _ \/ _ `//  ' \/ _ `// _ \
+                  /____/\__//_\_\/_/ \__/ \___//_//_/ /_//_/ \_,_//_//_/\_, //_/_/_/\_,_//_//_/
+                                                                       /___/                                
+            ";
+            Console.Clear();
+            Console.WriteLine(menuText);
             Console.WriteLine("Press enter to start game...");
-            SecretWord = GetRandomWord();
-           // SetRemainingLetters();
-           // SetupWordToDisplay();
-            Console.WriteLine("The word is " + SecretWord[0] + SecretWord[1]);
+            Console.ReadKey();
+            SecretWord = GetRandomWord();           
             HandleUserInput();
         }
 
         public void PlayAgain()
-        {  
+        {
             Console.WriteLine("\n\nPlay Again? y/n ");
             string usrInput = Console.ReadLine();
             if (usrInput == "y" || usrInput == "Y")
@@ -58,12 +65,12 @@ namespace LexiconHangman
             string usrInput;
             char guess;
             int guesses = 10;
-            int ltrsRevealed = 0;          
-            bool win = false;
-            
+            int ltrsRevealed = 0;
+            bool winnner = false;
+
             StringBuilder incorrectLetters = new StringBuilder(guesses);
             char[] correctLetters = new char[SecretWord.Length];
-            
+
 
             for (int i = 0; i < SecretWord.Length; i++)
             {
@@ -71,7 +78,7 @@ namespace LexiconHangman
                 Console.Write(correctLetters[i]);
             }
 
-            while (!win && guesses > 0)
+            while (!winnner && guesses > 0)
             {
                 Console.WriteLine("\nGuess a letter...");
                 usrInput = Console.ReadLine()?.ToLower();
@@ -89,7 +96,7 @@ namespace LexiconHangman
                 }
 
                 if (SecretWord.Contains(guess))
-                {                
+                {
                     for (int i = 0; i < SecretWord.Length; i++)
                     {
                         if (SecretWord[i] == guess)
@@ -101,7 +108,7 @@ namespace LexiconHangman
 
                     if (ltrsRevealed == SecretWord.Length || usrInput == SecretWord)
                     {
-                        win = true;
+                        winnner = true;
                     }
                     Console.WriteLine("\nCorrect");
                 }
@@ -121,37 +128,41 @@ namespace LexiconHangman
                 {
                     Console.Write(ltr);
                 }
+                // Prints the hanging man to the screen
+                Console.WriteLine("\n" + HangHimHigh(guesses));
             }// While ends 
 
-            // If win is true game is won
-            if (win)
-                {
+            // If winnner is true game is won
+            if (winnner)
+            {
                 Console.WriteLine($"\nAnd the correct word was ");
 
-                 // Replace the remaining underscores '_' with the correct letters
+                // Replace the remaining underscores '_' with the correct letters
                 for (int i = 0; i < SecretWord.Length; i++)
                 {
                     correctLetters[i] = SecretWord[i];
                     Console.Write(correctLetters[i]);
                 }
-                Console.WriteLine("\n Awesome! You won the game...");
-                    PlayAgain();
-                }
-                else 
-                {
-                    Console.WriteLine($"\nBummer, You lost the game...The word was {SecretWord}");
-                    PlayAgain();
-                }
-            }// HandleUserInputs() end
-        
+                Console.WriteLine("\n Awesome! You won the game...");               
+            }
+            else
+            {
+                Console.WriteLine($"\nBummer, You lost the game...The word was {SecretWord}");
+
+            }
+            Console.WriteLine("\n Press enter to continue...");
+            Console.ReadKey();
+            PlayAgain();
+        }// HandleUserInputs() end
+
         // Gets random word from a textfile and remove ',' then returns string
         public string GetRandomWord()
         {
             Random random = new Random();
             List<string> wordList = new List<string>();
             string currentPath = Environment.CurrentDirectory;
-            string filePath = Path.Combine(currentPath, "wordList.txt"); // current path =  LexiconHangman\bin\Debug\netcoreapp3.1\wordlist.txt
-            using (var reader = new StreamReader(filePath))
+            string filePath = Path.Combine(currentPath, @"..\..\..\wordList.txt"); // current path =  LexiconHangman\bin\Debug\netcoreapp3.1\ .. up 3 levels to main, remove if file not found: ..\..\..\wordList.txt
+            using (StreamReader reader = new StreamReader(filePath))
             {
                 string line;
                 while ((line = reader.ReadLine()) != null)
@@ -160,10 +171,82 @@ namespace LexiconHangman
                 }
             }
             int index = random.Next(wordList.Count);
-            string randomWord =  wordList[index];
+            string randomWord = wordList[index];
 
             return randomWord;
         }
-        
+        // Array of 10 hanged man strings,  starts backwards to match number of guesses 
+        static string HangHimHigh(int x)
+        {
+            string[] hangingMan = {  @"
+  +---+
+  |   |
+  O   |
+ /|\  |
+ / \  |
+      |
+=========", @"
+  +---+
+  |   |
+  O   |
+ /|\  |
+ /    |
+      |
+=========",@"
+  +---+
+  |   |
+  O   |
+ /|\  |
+      |
+      |
+=========",@"
+  +---+
+  |   |
+  O   |
+ /|   |
+      |
+      |
+=========",@"
+  +---+
+  |   |
+  O   |
+  |   |
+      |
+      |
+=========",@"
+  +---+
+  |   |
+  O   |
+      |
+      |
+      |
+=========",@"
+  +---+
+  |   |
+      |
+      |
+      |
+      |
+=========", @"
+   ---+
+      |
+      |
+      |
+      |
+      |
+=========", @"
+      |
+      |
+      |
+      |
+=========", @"
+      
+
+      
+      
+=========" };
+            return hangingMan[x];
+        }
+
     }// Class end
 } // Namespace end

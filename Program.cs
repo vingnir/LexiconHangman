@@ -18,17 +18,17 @@ namespace LexiconHangman
     public class Hangman
     {
         // TODO fix encaps
-        public StringBuilder incorrectLetters = new StringBuilder();
-        public string SecretWord { get; private set; }
-        public bool Winner { get; set; }
-        public int Guesses { get; set; }
+        private StringBuilder incorrectLetters;
+        private string SecretWord { get; set; }
+        private bool Winner { get; set; }
+        private int Guesses { get; set; }
 
 
-        public char[] CorrectLetters { get; set; }
-        public int LtrsRevealed { get; set; }
-        public char Guess { get; set; }
+        private char[] CorrectLetters { get; set; }
+        private int LtrsRevealed { get; set; }
+        private char Guess { get; set; }
 
-       
+
 
         // Starts the game
         public void RunGame()
@@ -64,6 +64,9 @@ namespace LexiconHangman
 
             // set winner to false
             Winner = false;
+
+            // Initialize stringbuilder obj incorrectLtrs
+            incorrectLetters = new StringBuilder();
         }
 
         public void PlayAgain()
@@ -85,44 +88,28 @@ namespace LexiconHangman
         public void HandleUserInput()
         {
             string usrInput;
+            string userInfo;
 
             while (!Winner && Guesses > 0)
             {
                 Console.WriteLine("\nGuess a letter..." + $"\n you have {Guesses} guesses left");
-
-                // Get user input
                 usrInput = GetInput();
                 Guess = usrInput[0];
-
-                // Check if input is the correct word then winner is true
                 Winner = LtrsRevealed == SecretWord.Length || usrInput == SecretWord;
-
-                // Check if input has been used before 
                 string duplicateWarning = CompareInput(usrInput);
 
                 if (duplicateWarning != string.Empty)
                 { Console.WriteLine(duplicateWarning); }
 
-                // Prints the correct guesses to the screen, the rest is hidden by underscore: '_'
                 Console.WriteLine(PrintCorrectLetters());
-
-                // Prints the hanging man to the screen
                 Console.WriteLine("\n" + GetHangningMan(Guesses));
-
-                // Inform user of the previous guessed letters
-                string userInfo = incorrectLetters.ToString() != string.Empty? "\nIncorrect guesses: " + incorrectLetters.ToString() : "\nIncorrect guesses: none";
+                userInfo = incorrectLetters.ToString() != string.Empty ? "\nIncorrect guesses: " + incorrectLetters.ToString() : "\nIncorrect guesses: none";
                 Console.WriteLine(userInfo);
             }// While ends 
 
             // If winnner is true the game is won
-            if (Winner)
-            {
-                Console.WriteLine($"\nAnd the correct word was " + SecretWord + "\n Awesome! You won the game...");
-            }
-            else
-            {
-                Console.WriteLine($"\nBummer, You lost the game...The word was {SecretWord}");
-            }
+            userInfo = Winner ? $"\nAnd the correct word was " + SecretWord + "\n Awesome! You won the game..." : $"\nBummer, You lost the game...The word was {SecretWord}";
+            Console.WriteLine(userInfo);
             Console.WriteLine("\n Press enter to continue...");
             Console.ReadKey();
             PlayAgain();
@@ -136,10 +123,7 @@ namespace LexiconHangman
 
             if (CorrectLetters.Contains(Guess) && userInput != SecretWord)
             {
-                reply = $"{Guess} is already an accepted answer! Guess again..., you have {Guesses} guesses left";
-                // foreach(var ltr in CorrectLetters)
-                //{ Console.WriteLine(ltr); }
-
+                reply = $"{Guess} is already an accepted answer! Guess again..., you have {Guesses} guesses left";               
             }
             else if (SecretWord.Contains(Guess))
             {
@@ -177,9 +161,16 @@ namespace LexiconHangman
         public string PrintCorrectLetters()
         {
             string visibleLtrs = string.Empty;
-            foreach (char ltr in CorrectLetters)
+            if (Winner)
             {
-                visibleLtrs += ltr;
+                visibleLtrs = SecretWord;
+            }
+            else
+            {
+                foreach (char ltr in CorrectLetters)
+                {
+                    visibleLtrs += ltr;
+                }
             }
             return visibleLtrs;
         }
